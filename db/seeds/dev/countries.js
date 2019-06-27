@@ -1,4 +1,5 @@
-const { countries, jobs } = require('../data')
+const { countries, jobs } = require('../data');
+const { cleanJob, cleanCountry } = require('../../../helpers/cleaners');
 
 exports.seed = function (knex, Promise) {
   return knex('job_postings').del()
@@ -19,12 +20,8 @@ exports.seed = function (knex, Promise) {
 
 
 const createCountry = (knex, country) => {
-  return knex('countries').insert({
-    name: country.name,
-    ladder: country.ladder,
-    corruption: country.corruption,
-    generosity: country.generosity
-  }, 'id')
+  const cleanedCountry = cleanCountry(country);
+  return knex('countries').insert(cleanedCountry, 'id')
     .then(countryId => {
       let jobPromises = [];
       jobs.forEach(job => {

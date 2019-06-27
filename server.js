@@ -1,8 +1,8 @@
 const express = require('express')
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
-const database = require('knex')(configuration)
-
+const database = require('knex')(configuration);
+const { cleanJob, cleanCountry } = require('./helpers/cleaners');
 const app = express()
 app.use(express.json())
 
@@ -61,3 +61,49 @@ app.get('/api/v1/jobs/:id', (req, res) => {
 });
 
 
+
+app.post('/api/v1/jobs', (req, res) => {
+  const job = req.body;
+
+  for (let requiredParameter of ['title', 'company', 'url', 'location', 'country']) {
+    if (!job[requiredParameter]) {
+      return res
+        .status(422)
+        .send({
+          error: `Expected format: { title: <String>, company: <String>, url: <String>, location: <String>, country: <String> }. You're missing a "${requiredParameter}" property.`
+        });
+    }
+  }
+  database('countries').where('name', job.country).select()
+  database('job_postings').insert(job, 'id')
+    .then(job => {
+    res.status(201).json({ id: job[0] })
+  })
+    .catch(err => {
+    res.status(500).json(`Oh no. Something bad happened: ${err}`)
+  });
+});
+
+
+
+app.post('/api/v1/countries', (req, res) => {
+  const country = req.body;
+
+  for (let requiredParameter of ['name', 'ladder', 'corruption', 'generosity']) {
+    if (!country[requiredParameter]) {
+      return res
+        .status(422)
+        .send({
+          error: `Expected format: { name: <String>, ladder: <String>, corruption: <String>, generosity: <String> }. You forgot a "${requiredParameter}" property.`
+        });
+    }
+  }
+
+  database('countries').insert(country, 'id')
+  .then(country => {
+    res.status(201).json({ id: country[0] })
+  })
+  .catch(err => {
+    res.status(500).json(`Oh no. Something bad happened: ${err}`)
+  });
+});
