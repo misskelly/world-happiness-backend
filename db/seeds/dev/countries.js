@@ -1,8 +1,10 @@
 const { countries, jobs } = require('../data')
 
 exports.seed = function (knex, Promise) {
-  return knex('countries').del()
-    .then(() => knex('job_postings').del())
+  return knex('job_postings').del()
+    .then(() => knex('countries').del())
+    .then(() => knex.raw('TRUNCATE TABLE job_postings RESTART IDENTITY CASCADE'))
+    .then(() => knex.raw('TRUNCATE TABLE countries RESTART IDENTITY CASCADE'))
     .then(() => {
       let countryPromises = [];
 
@@ -12,7 +14,7 @@ exports.seed = function (knex, Promise) {
       return Promise.all(countryPromises);
     })
     .then(() => console.log('Seeding complete!'))
-    .catch(error => console.log(`error seeding data: ${error}`))
+    .catch(error => console.log(`error seeding data: ${error}`)) 
 };
 
 

@@ -1,6 +1,7 @@
 
 exports.up = function(knex, Promise) {
   return Promise.all([
+    // knex.schema.dropTable('countries'),
     knex.schema.createTable('countries', (table) => {
       table.increments('id').primary();
       table.string('name');
