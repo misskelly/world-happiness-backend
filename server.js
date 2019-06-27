@@ -94,7 +94,7 @@ app.post('/api/v1/countries', (req, res) => {
       return res
         .status(422)
         .send({
-          error: `Expected format: { name: <String>, ladder: <String>, corruption: <String>, generosity: <String> }. You forgot a "${requiredParameter}" property.`
+          error: `Expected format: { name: <String>, ladder: <Integer>, corruption: <Integer>, generosity: <Integer> }. You forgot a "${requiredParameter}" property.`
         });
     }
   }
