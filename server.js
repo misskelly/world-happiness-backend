@@ -2,6 +2,7 @@ const express = require('express')
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
+
 const { cleanJob, cleanCountry } = require('./helpers/cleaners');
 const app = express()
 app.use(express.json())
